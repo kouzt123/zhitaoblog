@@ -6,9 +6,9 @@ As OpenShift is no longer truly free. I'll transfer all my words onto Github Pag
 
 I can be reached by:
 
-email: friends@kouzt.com
+email: [friends@kouzt.com](mailto:friends@kouzt.com)
 
-telegram @kouzt123
+telegram [@kouzt123](https://t.me/kouzt123)
 
 ### Contents
 
