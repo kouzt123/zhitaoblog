@@ -5,11 +5,15 @@ As OpenShift is no longer truly free. I'll transfer all my words onto Github Pag
 ### Contact Information
 
 I can be reached by:
+
 email: friends@kouzt.com
+
 telegram @kouzt123
 
 ### Contents
 
 Attitudes on Working Online
+
 Thoughts on Moviepass model to China
+
 And so on
