@@ -1,6 +1,6 @@
 ## Zhitao's blog on GitHub Pages
 
-As Redhat OpenShift is no longer truly free. I'll transfer all my blogs onto Github Pages. Hopefully everything will go well.
+As Redhat OpenShift is no longer truly free. I'll transfer all my thoughts to Github Pages. Hopefully everything will go well.
 
 ### Contact Information
 
@@ -14,8 +14,10 @@ LinkedIn Homepage: [kouzt.com](http://www.kouzt.com)
 
 ### Contents
 
-Attitudes on Working Online
+Working Online across multiple time zones
 
-Thoughts on Moviepass model to China
+Thoughts on Moviepass
 
-And [so on](https://www.zhitaokou.com/AntiTrustinChina.html)
+Localization and Globalization
+
+Antitrust Economics 20-page Class Paper: [ANTITRUST IN CHINA: NDRC VS. QUALCOMM INC](https://www.zhitaokou.com/AntiTrustinChina.html)
