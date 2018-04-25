@@ -18,4 +18,4 @@ Attitudes on Working Online
 
 Thoughts on Moviepass model to China
 
-And so on
+And [so on](https://www.zhitaokou.com/AntiTrustinChina.html)
