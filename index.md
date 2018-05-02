@@ -20,4 +20,4 @@ Thoughts on Moviepass
 
 Localization and Globalization
 
-Antitrust Economics 20-page Class Paper: [ANTITRUST IN CHINA: NDRC VS. QUALCOMM INC](https://www.zhitaokou.com/AntiTrustinChina.html)
+Antitrust Economics 20-page Class Paper: [ANTITRUST IN CHINA: NDRC VS. QUALCOMM INC](https://www.zhitaokou.com/Econ_116C_Paper)
