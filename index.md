@@ -10,7 +10,7 @@ email: [friends@kouzt.com](mailto:friends@kouzt.com)
 
 telegram: [@kouzt123](https://t.me/kouzt123)
 
-LinkedIn Homepage: [kouzt.com](http://www.kouzt.com)
+LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 
 ### Contents
 
