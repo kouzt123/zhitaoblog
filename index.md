@@ -14,7 +14,7 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 
 ### Contents
 
-#### School Works:
+<h4>School Works:</h4>
 
 - [Antitrust Economics](https://www.zhitaokou.com/AntitrustEconomicsZhitaoKou)
 
@@ -24,3 +24,4 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 
 - Casual Writings
   - Writing 2: VR School
+
