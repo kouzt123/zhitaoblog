@@ -22,8 +22,9 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 >
 > Grade Received: A-
 
-- General Writings
+- General Writing
   - Writing 2: [Empowering Colleges with VR: What Can It Bring](https://www.zhitaokou.com/Writing2VR)
   - Grade Received: A
-- ​
+- First Writing in College (Compare for Improvements)
+  - Ling 3B: [Economic Outlook: Why Americans Are Concerned](https://www.zhitaokou.com/Ling_2)
 
