@@ -1,0 +1,1 @@
+IDRViewer.config = {"pagecount":6,"title":"","author":"Administrator","fileName":"Ling_2.pdf","bounds":[[935,1210],[935,1210],[935,1210],[935,1210],[935,1210],[935,1210]],"bookmarks":[],"thumbnailType":"jpg","pageType":"html","pageLabels":[]};
