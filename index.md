@@ -34,4 +34,10 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 - (Work in Progress) Localization and Globalization
   - I love *both* American and Chinese products. I wish to bring good American goods to China as well as bring Chinese products to America. I plan to write something based on my thoughts on Product Management.
 - (Work in Progress) Thoughts on Moviepass
-  - It is just so *interesting* to talk about it. How can a business model like Moviepass to work? I plan to use a lot of Economics graphs to illustrate my thought on this.
+  - It is just so much *fun* to talk about it. How can a business model like Moviepass to work? I plan to use a lot of Economics graphs to illustrate my thought on this.
+
+
+
+
+
+> Good News: Starting May 1, 2018, Github Pages support HTTPS for custom domains! I no longer need cloudflare for encryption support.
