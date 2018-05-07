@@ -23,5 +23,4 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 > Grade Received: A-
 
 - Casual Writings
-  - Writing 2: VR School
-
+  - Writing 2: [Empowering Colleges with VR: What Can It Bring]()
