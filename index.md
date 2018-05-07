@@ -16,15 +16,24 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 
 <h4>School Works:</h4>
 
-- [Antitrust Economics](https://www.zhitaokou.com/AntitrustEconomicsZhitaoKou)
+- [Antitrust Economics](https://www.zhitaokou.com/AntitrustEconomicsZhitaoKou) 20-Page Research Paper
+  - Topic: Antitrust In China: NDRC VS. Qualcomm Inc
+  - Grade Received: A-
+  - May be slightly *biased*
 
-> Topic: Antitrust In China: NDRC VS. Qualcomm Inc
->
-> Grade Received: A-
 
 - General Writing
   - Writing 2: [Empowering Colleges with VR: What Can It Bring](https://www.zhitaokou.com/Writing2VR)
   - Grade Received: A
 - First Writing in College (Compare for Improvements)
   - Ling 3B: [Economic Outlook: Why Americans Are Concerned](https://www.zhitaokou.com/Ling_2)
+  - Grade Received: A
 
+<h4>Personal Interests</h4>
+
+- (WIP) Working Online across multiple time zones
+  - Outline: For years, I have been working on projects that require to work across time zones. I found it interesting to talk about. More on that later
+- (WIP) Localization and Globalization
+  - I love *both* American and Chinese products. I wish to bring good American goods to China as well as bring Chinese products to America. I plan to write something based on my thoughts on Product Management.
+- (WIP) Thoughts on Moviepass
+  - It is just so *interesting* to talk about it. How can a business model like Moviepass to work? I plan to use a lot of Economics graphs to illustrate my thought on this.
