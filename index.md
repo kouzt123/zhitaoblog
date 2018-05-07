@@ -1,6 +1,6 @@
 ## Zhitao's blog on GitHub Pages
 
-In 2017, Redhat OpenShift became no longer truly free. I'll transfer all my thoughts to Github Pages. I didn't do all the fancy css stuff to make my blog look good and show my CS skills. A page like this is good enough to present my Econ reasoning skills.
+In 2017, Redhat OpenShift became no longer truly free. I'll transfer all my thoughts to Github Pages. I didn't do the fancy css stuff to make my blog look good and show my CS skills. A page like this is good enough to present my Econ reasoning skills.
 
 ### Contact Information
 
