@@ -14,10 +14,12 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 
 ### Contents
 
-Working Online across multiple time zones
+####School Works:
 
-Thoughts on Moviepass
+- [Antitrust Economics](https://www.zhitaokou.com/AntitrustEconomicsZhitaoKou)
 
-Localization and Globalization
+> Topic: Antitrust In China: NDRC VS. Qualcomm Inc
+>
+> Grade Received: A-
 
-Antitrust Economics 20-page Class Paper: [ANTITRUST IN CHINA: NDRC VS. QUALCOMM INC](https://www.zhitaokou.com/AntitrustEconomicsZhitaoKou)
+- Casual Writings
