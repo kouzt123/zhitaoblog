@@ -30,7 +30,7 @@ LinkedIn Homepage: <a href="http://www.kouzt.com" target="_blank">kouzt.com</a>
 <h4>Current Interests</h4>
 
 - (Work in Progress) Working Online across multiple time zones
-  - Outline: For years, I have been working on projects that require to work across time zones. I found it interesting to talk about. I even made one <a href="https://workinglifeat.home.blog" target="_blank">wordpress website for a class project</a>, though it doesn't contain everything I'd loke to cover.
+  - Outline: For years, I have been working on projects that require to work across time zones. I found it interesting to talk about. I even made one <a href="https://workinglifeat.home.blog" target="_blank">wordpress website for a class project</a>, though it doesn't contain everything I'd like to cover.
 - (Work in Progress) Localization and Globalization
   - I love *both* American and Chinese products. I wish to bring good American goods to China as well as bring Chinese products to America. I plan to write something based on my thoughts on Product Management.
 - (Work in Progress) Thoughts on Moviepass
