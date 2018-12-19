@@ -169,27 +169,8 @@ input, textarea {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFB881D', endColorstr='#FFFFAD34', GradientType=1);
   color: #fff; }
 
-.google-plus-link {
-  color: #eb4235; }
-
-.facebook-link {
-  color: #3B5998; }
-
-.twitter-link {
-  color: #00aced; }
-
-.dribbble-link {
-  color: #ea4c89; }
-
-.pinterest-link {
-  color: #cb2027; }
-
-.behance-link {
-  color: #1769ff; }
-
-.linkedin-link {
-  color: #007bb6; }
-
+.intro-link{
+	color: limegreen;}
 .color-text {
   color: limegreen; }
 
