@@ -101,7 +101,7 @@ input, textarea {
 .block-title {
   font-size: 22px;
   font-weight: normal;
-  color: #000; }
+  color:#228B22;}
 
 .owl-item {
   padding-left: 15px;
@@ -530,7 +530,7 @@ input, textarea {
 
 .awards-logo {
   max-width: 150px;
-  min-height: 80px; }
+  height: 90px; }
 
 .site-footer {
   padding-top: 90px;
