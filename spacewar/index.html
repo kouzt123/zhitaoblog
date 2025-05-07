@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Press Start 2P', cursive;
-            background-color: #000000; /* Deep space black */
+            background-color: #000000; 
             color: #f3f4f6; 
             display: flex;
             flex-direction: column;
@@ -29,9 +29,9 @@
             width: 100%;
         }
         #gameContainer {
-            border: 2px solid #0ea5e9; /* Brighter border */
+            border: 2px solid #0ea5e9; 
             border-radius: 0.5rem; 
-            box-shadow: 0 0 25px rgba(14, 165, 233, 0.6); /* Cyan glow */
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.6); 
             position: relative; 
             background-color: #000;
             margin-bottom: 10px; 
@@ -42,37 +42,42 @@
         }
         .game-controls-area { 
             width: 100%;
+            min-height: 130px; 
             display: flex;
             justify-content: center; 
             align-items: center; 
             padding: 5px 0; 
+            position: relative; /* Context for absolute joystick */
+            /* background-color: rgba(0,255,0,0.1); /* For visualizing touch area */
         }
         #joystickContainer {
             width: 110px; 
             height: 110px;
-            background-color: rgba(31, 41, 55, 0.8); /* Slightly darker, more integrated */
+            background-color: rgba(31, 41, 55, 0.8); 
             border-radius: 50%;
-            position: relative; 
-            display: flex;
+            position: absolute; /* MODIFIED: Will be positioned by JS, centered initially by JS */
+            display: flex; 
             align-items: center;
             justify-content: center;
-            border: 2px solid #38bdf8; /* Sky blue border */
+            border: 2px solid #38bdf8; 
+            z-index: 20; 
+            /* transition: left 0.05s, top 0.05s; /* Optional: smooth jump */
         }
         #joystickKnob {
             width: 45px; 
             height: 45px;
             background-color: #0ea5e9;
             border-radius: 50%;
-            position: absolute;
-            border: 2px solid #7dd3fc; /* Lighter sky blue */
+            position: absolute; 
+            border: 2px solid #7dd3fc; 
             box-shadow: 0 0 12px #0ea5e9;
         }
         #playerInfoDisplay {
             position: absolute;
             top: 5px;
             left: 5px;
-            font-size: 10px; /* Compact */
-            color: #2dd4bf; /* Teal color for info */
+            font-size: 10px; 
+            color: #2dd4bf; 
             background-color: rgba(0,0,0,0.75); 
             padding: 4px 6px;
             border-radius: 4px;
@@ -201,8 +206,6 @@
             width: 100%;
             margin-top: 20px; 
         }
-
-
     </style>
 </head>
 <body>
@@ -215,19 +218,15 @@
                 <div id="bossHealthBar"></div>
             </div>
         </div>
-        <div class="game-controls-area">
+        <div class="game-controls-area" id="gameControlsArea"> 
             <div id="joystickContainer">
                 <div id="joystickKnob"></div>
             </div>
         </div>
     </div>
     <div id="messageBox" class="message-box"> 
-        <div id="messageContent"> 
-            {/* Content dynamically added by JS */}
-        </div>
-        <div id="buttonContainer">
-             {/* Buttons dynamically added by JS */}
-        </div>
+        <div id="messageContent"></div>
+        <div id="buttonContainer"></div>
         <p id="shareFeedback"></p> 
     </div>
 
@@ -236,6 +235,8 @@
         const ctx = canvas.getContext('2d');
         const gameContainer = document.getElementById('gameContainer');
         const playerInfoDisplay = document.getElementById('playerInfoDisplay');
+        const gameWrapper = document.getElementById('gameWrapper'); 
+        const gameControlsArea = document.getElementById('gameControlsArea'); 
 
         let gameWidth = Math.min(window.innerWidth * 0.95, 400); 
         let gameHeight = Math.min(window.innerHeight * 0.60, 450); 
@@ -257,7 +258,6 @@
         function showMessage(text, buttonText = "OK", callback, isIntro = false, isGameOver = false) {
             isGamePaused = true; 
             cancelAnimationFrame(animationFrameId); 
-
             shareFeedbackEl.textContent = ''; 
             messageContent.innerHTML = ''; 
             buttonContainer.innerHTML = ''; 
@@ -281,12 +281,7 @@
                 startButton.onclick = () => {
                     messageBox.style.display = 'none';
                     messageBox.classList.remove('intro-message-box');
-                    buttonContainer.style.position = 'static';
-                    buttonContainer.style.bottom = 'auto';
-                    buttonContainer.style.left = 'auto';
-                    buttonContainer.style.transform = 'none';
-                    buttonContainer.style.zIndex = 'auto';
-
+                    buttonContainer.style.position = 'static'; 
                     isGamePaused = false; 
                     if (callback) callback(); else if (!gameOver) requestAnimationFrame(gameLoop);
                 };
@@ -303,11 +298,9 @@
             } else {
                 messageBox.classList.remove('intro-message-box');
                 messageBox.style.backgroundColor = 'rgba(17, 24, 39, 0.97)'; 
-
                 const p = document.createElement('p');
                 p.innerHTML = text.replace(/\n/g, '<br>');
                 messageContent.appendChild(p);
-
                 const mainButton = document.createElement('button');
                 mainButton.id = 'messageButton';
                 mainButton.textContent = buttonText;
@@ -317,7 +310,6 @@
                     if (callback) callback(); else if (!gameOver) requestAnimationFrame(gameLoop);
                 };
                 buttonContainer.appendChild(mainButton);
-
                 if (isGameOver) {
                     const shareButton = document.createElement('button');
                     shareButton.textContent = "Share Score";
@@ -332,7 +324,6 @@
         function shareGameResult() {
             const shareText = `I reached Level ${player.level} and defeated ${player.bossesDefeated} K'Tharr Overlords in Space Evolved! Can you beat my score? #SpaceEvolvedGame`;
             shareFeedbackEl.textContent = `Share this: ${shareText}`; 
-
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(shareText)
                     .then(() => { shareFeedbackEl.textContent = "Score copied! Share it with your squadron!"; })
@@ -373,7 +364,7 @@
         const BOSS_SUMMON_COOLDOWN = 6500; 
 
         const bossBase = {
-            width: 80, height: 60, baseHealth: 70, /* Increased base boss health */ baseSpeed: 0.22, 
+            width: 80, height: 60, baseHealth: 70, baseSpeed: 0.22, 
             color: '#b91c1c', projectileSpeed: 4.3, shootCooldown: 1300, lastShotTime: 0,
             attackPatterns: ['lineShot', 'spreadShot', 'charge', 'pulseShot', 'summonMinions'], 
             currentPattern: 'lineShot', patternChangeInterval: 5800, lastPatternChange: 0,
@@ -383,9 +374,12 @@
         const joystickContainer = document.getElementById('joystickContainer');
         const joystickKnob = document.getElementById('joystickKnob');
         const joystick = {
-            active: false, radius: 0, knobRadius: 0,
-            baseX: 0, baseY: 0,
-            currentX: 0, currentY: 0,
+            active: false,
+            radius: 110 / 2, 
+            knobRadius: 45 / 2, 
+            // screenCenterX/Y will store the absolute screen coordinates of the joystick's center when active
+            screenCenterX: 0, 
+            screenCenterY: 0, 
         };
         
         function drawCircle(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();ctx.closePath();}
@@ -395,33 +389,96 @@
         function distance(x1,y1,x2,y2){const dx=x2-x1;const dy=y2-y1;return Math.sqrt(dx*dx+dy*dy);}
         function degreesToRadians(d){return d*(Math.PI/180);}
 
-        function getTouchPos(container,touchEvent){var rect=container.getBoundingClientRect();return{x:touchEvent.touches[0].clientX-rect.left,y:touchEvent.touches[0].clientY-rect.top};}
-        function getMousePos(container,mouseEvent){var rect=container.getBoundingClientRect();return{x:mouseEvent.clientX-rect.left,y:mouseEvent.clientY-rect.top};}
-
-        joystickContainer.addEventListener('mousedown',(e)=>{joystick.active=true;updateJoystick(getMousePos(joystickContainer,e));});
-        document.addEventListener('mousemove',(e)=>{if(joystick.active)updateJoystick(getMousePos(joystickContainer,e));});
-        document.addEventListener('mouseup',()=>{if(joystick.active){joystick.active=false;resetJoystick();}});
-        joystickContainer.addEventListener('touchstart',(e)=>{e.preventDefault();joystick.active=true;updateJoystick(getTouchPos(joystickContainer,e));},{passive:false});
-        document.addEventListener('touchmove',(e)=>{if(joystick.active){e.preventDefault();updateJoystick(getTouchPos(joystickContainer,e));}},{passive:false});
-        document.addEventListener('touchend',()=>{if(joystick.active){joystick.active=false;resetJoystick();}});
-
-        function updateJoystick(pos){
-            const dx=pos.x-joystick.baseX;const dy=pos.y-joystick.baseY;
-            let dist=Math.sqrt(dx*dx+dy*dy);
-            const maxDist=joystick.radius-joystick.knobRadius;
-            if (maxDist <= 0) { player.dx = 0; player.dy = 0; return; }
-            if(dist>maxDist){ const angle=Math.atan2(dy,dx); joystick.currentX=joystick.baseX+Math.cos(angle)*maxDist; joystick.currentY=joystick.baseY+Math.sin(angle)*maxDist; player.dx=Math.cos(angle)*player.speed; player.dy=Math.sin(angle)*player.speed;
-            }else{ joystick.currentX=pos.x; joystick.currentY=pos.y; player.dx=(dx/maxDist)*player.speed; player.dy=(dy/maxDist)*player.speed; }
-            if(dist < joystick.knobRadius / 3 || dist === 0) { player.dx=0;player.dy=0; }
-            joystickKnob.style.left=`${joystick.currentX-joystick.knobRadius}px`;
-            joystickKnob.style.top=`${joystick.currentY-joystick.knobRadius}px`;
+        function getTouchPageCoordinates(event) {
+            if (event.touches && event.touches.length > 0) {
+                return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+            } else if (event.clientX !== undefined) { 
+                return { x: event.clientX, y: event.clientY };
+            }
+            return null; 
         }
-        function resetJoystick(){
-            joystickKnob.style.left = `${joystick.baseX - joystick.knobRadius}px`;
-            joystickKnob.style.top = `${joystick.baseY - joystick.knobRadius}px`;
-            player.dx=0; player.dy=0;
-            joystick.currentX = joystick.baseX; joystick.currentY = joystick.baseY;
-            joystick.active = false; 
+
+        // MODIFIED: Event listeners for hybrid joystick
+        gameControlsArea.addEventListener('mousedown', handleJoystickStart);
+        gameControlsArea.addEventListener('touchstart', handleJoystickStart, { passive: false });
+        document.addEventListener('mousemove', handleJoystickMove);
+        document.addEventListener('touchmove', handleJoystickMove, { passive: false });
+        document.addEventListener('mouseup', handleJoystickEnd);
+        document.addEventListener('touchend', handleJoystickEnd);
+        document.addEventListener('touchcancel', handleJoystickEnd);
+
+
+        function handleJoystickStart(event) {
+            if (isGamePaused || gameOver) return;
+            event.preventDefault();
+            const touchCoords = getTouchPageCoordinates(event);
+            if (!touchCoords) return;
+
+            joystick.active = true;
+            joystick.screenCenterX = touchCoords.x; // Store the touch point as the new joystick center
+            joystick.screenCenterY = touchCoords.y;
+
+            // Position joystickContainer: its center should be at touchCoords
+            const controlsAreaRect = gameControlsArea.getBoundingClientRect();
+            joystickContainer.style.left = (touchCoords.x - controlsAreaRect.left - joystick.radius) + 'px';
+            joystickContainer.style.top = (touchCoords.y - controlsAreaRect.top - joystick.radius) + 'px';
+            
+            joystickContainer.style.display = 'flex'; // Ensure it's visible if it was hidden
+            updateDynamicJoystick(touchCoords.x, touchCoords.y); // Center knob at new base
+        }
+
+        function handleJoystickMove(event) {
+            if (!joystick.active || isGamePaused || gameOver) return;
+            event.preventDefault();
+            const touchCoords = getTouchPageCoordinates(event);
+            if (!touchCoords) return;
+            updateDynamicJoystick(touchCoords.x, touchCoords.y);
+        }
+
+        function handleJoystickEnd(event) {
+            if (!joystick.active) return;
+            // Reset joystickContainer to its initial centered position
+            const controlsAreaRect = gameControlsArea.getBoundingClientRect();
+            joystickContainer.style.left = (controlsAreaRect.width / 2 - joystick.radius) + 'px';
+            joystickContainer.style.top = (controlsAreaRect.height / 2 - joystick.radius) + 'px';
+            
+            player.dx = 0;
+            player.dy = 0;
+            joystick.active = false;
+            // Visually center knob in its container
+            joystickKnob.style.left = (joystick.radius - joystick.knobRadius) + 'px';
+            joystickKnob.style.top = (joystick.radius - joystick.knobRadius) + 'px';
+        }
+
+        function updateDynamicJoystick(currentPageX, currentPageY) {
+            if (!joystick.active) return;
+
+            const maxKnobDisplacement = joystick.radius - joystick.knobRadius;
+            if (maxKnobDisplacement <= 0) { 
+                player.dx = 0; player.dy = 0;
+                return;
+            }
+
+            let knobDeltaX = currentPageX - joystick.screenCenterX; 
+            let knobDeltaY = currentPageY - joystick.screenCenterY;
+            const distFromCenter = Math.sqrt(knobDeltaX * knobDeltaX + knobDeltaY * knobDeltaY);
+
+            if (distFromCenter > maxKnobDisplacement) {
+                const angle = Math.atan2(knobDeltaY, knobDeltaX);
+                knobDeltaX = Math.cos(angle) * maxKnobDisplacement;
+                knobDeltaY = Math.sin(angle) * maxKnobDisplacement;
+            }
+            
+            joystickKnob.style.left = (joystick.radius + knobDeltaX - joystick.knobRadius) + 'px';
+            joystickKnob.style.top = (joystick.radius + knobDeltaY - joystick.knobRadius) + 'px';
+
+            player.dx = (knobDeltaX / maxKnobDisplacement) * player.speed;
+            player.dy = (knobDeltaY / maxKnobDisplacement) * player.speed;
+
+            if (distFromCenter < joystick.knobRadius / 4) { 
+                player.dx = 0;
+                player.dy = 0;
+            }
         }
         
         const keys={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false};
@@ -453,16 +510,13 @@
             if(gameMode==='boss'||activeBoss)return;const now=Date.now();
             if(now-lastEnemySpawn>enemySpawnInterval){
                 const displayedLevel = Math.floor(Math.random()*(player.level+5))+Math.max(1,player.level-3);
-                // MODIFIED: Capped health for regular enemies
                 const health = Math.min(displayedLevel, 40 + Math.floor(player.level / 3) + player.bossesDefeated * 5);
-
                 let visualRadius = enemyBaseRadius + displayedLevel * ENEMY_VISUAL_RADIUS_LEVEL_SCALE; 
                 visualRadius = Math.min(visualRadius, MAX_ENEMY_VISUAL_RADIUS);
                 const x=Math.random()*(gameWidth-visualRadius*2)+visualRadius;const y=-visualRadius;
                 const speedAddition = Math.min(displayedLevel * 0.01, MAX_ENEMY_SPEED_ADDITION); 
                 const speed = enemyBaseSpeed + speedAddition;
                 const hue=(displayedLevel*20)%360;const color=`hsl(${hue},75%,55%)`;
-                // Store both displayedLevel (for text) and actual health
                 enemies.push({x,y,radius:visualRadius,level:displayedLevel, health: health, speed,color,type:'normal'});
                 lastEnemySpawn=now;
                 if(enemySpawnInterval>400)enemySpawnInterval-=8; 
@@ -491,18 +545,12 @@
         function spawnBoss(){
             gameMode='boss';enemies=[];projectiles=projectiles.filter(p=>p.isPlayer);
             const bossInstanceNumber=player.bossesDefeated+1;
-            // MODIFIED: Boss health scaling
-            const bossHealth = bossBase.baseHealth + 
-                               (bossInstanceNumber * 50) + 
-                               ((bossInstanceNumber -1) * (bossInstanceNumber * 50)) + 
-                               (player.bossesDefeated * player.level);
-
+            const bossHealth = bossBase.baseHealth + (bossInstanceNumber * 50) + ((bossInstanceNumber -1) * (bossInstanceNumber * 50)) + (player.bossesDefeated * player.level);
             activeBoss={...bossBase,x:gameWidth/2-bossBase.width/2,y:-bossBase.height-20,
-                health: bossHealth,
-                maxHealth: bossHealth, 
+                health: bossHealth, maxHealth: bossHealth, 
                 speed:bossBase.baseSpeed+(bossInstanceNumber-1)*0.09,isBoss:true,projectiles:[],lastShotTime:Date.now(),
                 lastPatternChange:Date.now(),currentPattern:bossBase.attackPatterns[Math.floor(Math.random()*bossBase.attackPatterns.length)],pulseShotAngle:0, lastSummonTime: 0};
-            activeBoss.health=Math.max(30,activeBoss.health);activeBoss.maxHealth=Math.max(30,activeBoss.maxHealth); // Ensure a minimum
+            activeBoss.health=Math.max(30,activeBoss.health);activeBoss.maxHealth=Math.max(30,activeBoss.maxHealth); 
             bossHealthBarContainer.style.display='block';updateBossHealthBar();
             showMessage(`WARNING! Level ${activeBoss.maxHealth} K'THARR OVERLORD APPROACHING!`, "ENGAGE ENEMY!", () => {
                 isGamePaused = false; if (!gameOver) requestAnimationFrame(gameLoop);
@@ -589,19 +637,16 @@
             player.upgrades={fireRateLevel:0,numBullets:1,spreadAngleDeg:0,projectileDamage:1,autoShoot:true};
             player.currentBossTriggerLevel=10;player.bossesDefeated=0;calculateShootCooldown();
             
-            if (joystickContainer && joystickKnob) {
-                joystick.radius = joystickContainer.offsetWidth / 2;
-                joystick.knobRadius = joystickKnob.offsetWidth / 2;
-                joystick.baseX = joystickContainer.offsetWidth / 2;
-                joystick.baseY = joystickContainer.offsetHeight / 2;
-                joystick.currentX = joystick.baseX;
-                joystick.currentY = joystick.baseY;
-            } else { 
-                joystick.radius = 55; joystick.knobRadius = 22.5; 
-                joystick.baseX = 55; joystick.baseY = 55;
-                joystick.currentX = 55; joystick.currentY = 55;
-            }
-            resetJoystick(); 
+            // Set fixed center for the joystick based on its container's current position
+            const rect = joystickContainer.getBoundingClientRect();
+            joystick.fixedCenterX = rect.left + joystick.radius; // Use joystick.radius (half of container width)
+            joystick.fixedCenterY = rect.top + joystick.radius;  // Use joystick.radius (half of container height)
+
+            // Reset knob to center of the fixed joystick container
+            joystickKnob.style.left = (joystick.radius - joystick.knobRadius) + 'px';
+            joystickKnob.style.top = (joystick.radius - joystick.knobRadius) + 'px';
+            joystick.active = false;
+            player.dx = 0; player.dy = 0;
 
             projectiles=[];enemies=[];collectibles=[];activeBoss=null;
             enemySpawnInterval=2150;lastEnemySpawn=0;gameMode='normal';
@@ -644,7 +689,11 @@
             animationFrameId = requestAnimationFrame(gameLoop); 
 
             ctx.clearRect(0,0,gameWidth,gameHeight);
-            if(!joystick.active)updatePlayerMovementFromKeys();
+            if(!joystick.active && !Object.values(keys).some(k => k)) { 
+                player.dx = 0; player.dy = 0;
+            } else if (!joystick.active) {
+                 updatePlayerMovementFromKeys();
+            }
             updatePlayer();autoShootController();updateProjectiles();
             if(gameMode==='normal'){updateEnemies();spawnEnemy();checkBossTrigger();}else if(gameMode==='boss'){updateBoss();updateEnemies();}
             updateCollectibles();handleCollisions();
@@ -662,15 +711,15 @@
             canvas.width = gameWidth;canvas.height = gameHeight;
             gameContainer.style.width = `${gameWidth}px`;gameContainer.style.height = `${gameHeight}px`;
             
-            if (joystickContainer && joystickKnob) {
-                joystick.radius = joystickContainer.offsetWidth / 2;
-                joystick.knobRadius = joystickKnob.offsetWidth / 2;
-                joystick.baseX = joystickContainer.offsetWidth / 2;
-                joystick.baseY = joystickContainer.offsetHeight / 2;
-                joystick.currentX = joystick.baseX; 
-                joystick.currentY = joystick.baseY;
+            // Update fixed center on resize
+            const rect = joystickContainer.getBoundingClientRect();
+            joystick.fixedCenterX = rect.left + joystick.radius;
+            joystick.fixedCenterY = rect.top + joystick.radius;
+            // Reset knob to center if joystick not active
+            if (!joystick.active) {
+                joystickKnob.style.left = (joystick.radius - joystick.knobRadius) + 'px';
+                joystickKnob.style.top = (joystick.radius - joystick.knobRadius) + 'px';
             }
-            resetJoystick(); 
 
             player.x=Math.min(player.x,gameWidth-player.radius);player.y=Math.min(player.y,gameHeight-player.radius);
             if(activeBoss){activeBoss.x=Math.min(activeBoss.x,gameWidth-activeBoss.width);activeBoss.y=Math.min(activeBoss.y,gameHeight-activeBoss.height);}
@@ -681,11 +730,20 @@
             }
         });
         
-        // --- Start Game ---
-        showMessage("Intro Text - will be replaced by CSS animation", "START MISSION", () => {
-            resetGameValues(); 
-            gameLoop(); 
-        }, true); 
+        window.onload = () => {
+            // Set initial fixed center for the joystick
+            const rect = joystickContainer.getBoundingClientRect();
+            joystick.fixedCenterX = rect.left + joystick.radius; // Use joystick.radius (half of container width)
+            joystick.fixedCenterY = rect.top + joystick.radius;  // Use joystick.radius (half of container height)
+
+            joystickKnob.style.left = (joystick.radius - joystick.knobRadius) + 'px';
+            joystickKnob.style.top = (joystick.radius - joystick.knobRadius) + 'px';
+            
+            showMessage("Intro Text - will be replaced by CSS animation", "START MISSION", () => {
+                resetGameValues(); 
+                gameLoop(); 
+            }, true); 
+        };
 
     </script>
 </body>
