@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Space Evolved - Final Stand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #000000; /* Deep space black */
+            color: #f3f4f6; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 5px; 
+            padding-bottom: 5px; 
+            overflow: hidden; 
+            touch-action: none; 
+        }
+        #gameWrapper { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        #gameContainer {
+            border: 2px solid #0ea5e9; /* Brighter border */
+            border-radius: 0.5rem; 
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.6); /* Cyan glow */
+            position: relative; 
+            background-color: #000;
+            margin-bottom: 10px; 
+        }
+        canvas {
+            display: block;
+            background-color: #000000;
+        }
+        .game-controls-area { 
+            width: 100%;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            padding: 5px 0; 
+        }
+        #joystickContainer {
+            width: 110px; 
+            height: 110px;
+            background-color: rgba(31, 41, 55, 0.8); /* Slightly darker, more integrated */
+            border-radius: 50%;
+            position: relative; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #38bdf8; /* Sky blue border */
+        }
+        #joystickKnob {
+            width: 45px; 
+            height: 45px;
+            background-color: #0ea5e9;
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #7dd3fc; /* Lighter sky blue */
+            box-shadow: 0 0 12px #0ea5e9;
+        }
+        #playerInfoDisplay {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 10px; /* Compact */
+            color: #2dd4bf; /* Teal color for info */
+            background-color: rgba(0,0,0,0.75); 
+            padding: 4px 6px;
+            border-radius: 4px;
+            line-height: 1.2; 
+            z-index: 10; 
+            border-left: 2px solid #0ea5e9;
+        }
+        .message-box {
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(17, 24, 39, 0.97); 
+            color: #e0e0e0; 
+            padding: 20px 25px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 15px; 
+            z-index: 1000;
+            border: 2px solid #0ea5e9;
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+            width: 90%; 
+            max-width: 400px;
+            display: none; 
+            flex-direction: column; 
+            align-items: center;
+        }
+        .message-box button {
+            background-color: #0ea5e9;
+            color: white;
+            padding: 10px 20px; 
+            border: none;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            min-width: 120px; 
+        }
+        .message-box button:hover {
+            background-color: #0284c7;
+            transform: scale(1.05);
+        }
+        .message-box button.share-button { 
+            background-color: #10b981; 
+        }
+        .message-box button.share-button:hover {
+            background-color: #059669;
+        }
+        #bossHealthBarContainer {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 75%; 
+            height: 20px; 
+            background-color: rgba(100, 100, 100, 0.7);
+            border-radius: 4px;
+            display: none; 
+            z-index: 10;
+            border: 1px solid #333;
+        }
+        #bossHealthBar {
+            width: 100%;
+            height: 100%;
+            background-color: #c026d3; 
+            border-radius: 3px;
+            transition: width 0.2s ease-out;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* Star Wars Intro Styles */
+        .intro-message-box {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            perspective: 200px; 
+        }
+        .intro-message-box #messageContent { 
+            width: 100%;
+            height: 100%;
+            position: relative; 
+        }
+        .intro-content {
+            position: absolute; 
+            left: 50%;
+            width: 80%;
+            max-width: 500px;
+            text-align: justify;
+            color: #facc15; 
+            font-size: clamp(18px, 4.5vw, 30px); 
+            line-height: 1.6;
+            transform-origin: 50% 100%;
+            animation: crawl 4.0s linear forwards; 
+        }
+        .intro-content h2 {
+            font-size: clamp(22px, 5.5vw, 34px);
+            text-align: center;
+            margin-bottom: 15px; 
+        }
+        @keyframes crawl {
+            0% {
+                top: 100vh; 
+                transform: translateX(-50%) rotateX(20deg) translateZ(0); 
+            }
+            100% {
+                top: -100vh; 
+                transform: translateX(-50%) rotateX(25deg) translateZ(-650px); 
+            }
+        }
+        #shareFeedback {
+            font-size: 12px;
+            color: #9ca3af; 
+            margin-top: 10px;
+            min-height: 1em; 
+        }
+        #buttonContainer.intro-button-active { 
+            position: static; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px; 
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1 class="text-2xl font-bold mb-2 text-sky-400 tracking-wider text-center px-2">SPACE EVOLVED</h1>
+    <div id="gameWrapper">
+        <div id="gameContainer">
+            <canvas id="gameCanvas"></canvas>
+            <div id="playerInfoDisplay">Level: 1</div>
+            <div id="bossHealthBarContainer">
+                <div id="bossHealthBar"></div>
+            </div>
+        </div>
+        <div class="game-controls-area">
+            <div id="joystickContainer">
+                <div id="joystickKnob"></div>
+            </div>
+        </div>
+    </div>
+    <div id="messageBox" class="message-box"> 
+        <div id="messageContent"> 
+            {/* Content dynamically added by JS */}
+        </div>
+        <div id="buttonContainer">
+             {/* Buttons dynamically added by JS */}
+        </div>
+        <p id="shareFeedback"></p> 
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameContainer = document.getElementById('gameContainer');
+        const playerInfoDisplay = document.getElementById('playerInfoDisplay');
+
+        let gameWidth = Math.min(window.innerWidth * 0.95, 400); 
+        let gameHeight = Math.min(window.innerHeight * 0.60, 450); 
+        if (window.innerWidth > 600) { gameHeight = Math.min(window.innerHeight * 0.65, 500); }
+        if (window.innerHeight < 500) { gameHeight = Math.min(window.innerHeight * 0.55, 350); }
+        canvas.width = gameWidth; canvas.height = gameHeight;
+        gameContainer.style.width = `${gameWidth}px`; gameContainer.style.height = `${gameHeight}px`;
+
+        let isGamePaused = true; 
+        let gameOver = false; 
+        let animationFrameId; 
+        let gameMode = 'normal'; 
+
+        const messageBox = document.getElementById('messageBox');
+        const messageContent = document.getElementById('messageContent');
+        const buttonContainer = document.getElementById('buttonContainer');
+        const shareFeedbackEl = document.getElementById('shareFeedback');
+
+        function showMessage(text, buttonText = "OK", callback, isIntro = false, isGameOver = false) {
+            isGamePaused = true; 
+            cancelAnimationFrame(animationFrameId); 
+
+            shareFeedbackEl.textContent = ''; 
+            messageContent.innerHTML = ''; 
+            buttonContainer.innerHTML = ''; 
+            buttonContainer.classList.remove('intro-button-active'); 
+            
+            if (isIntro) {
+                messageBox.classList.add('intro-message-box');
+                const introDiv = document.createElement('div');
+                introDiv.classList.add('intro-content');
+                introDiv.innerHTML = `<h2>A Galaxy in Peril...</h2>
+                    <p>The K'Tharr armada descends! Earth's fate hangs by a thread.</p>
+                    <p>You are Commander Rostova, piloting the X-7 Starfighter.</p>
+                    <p>Absorb. Evolve. Repel the invaders!</p>
+                    <p>Good luck, Commander.</p>`;
+                messageContent.appendChild(introDiv);
+                
+                const startButton = document.createElement('button');
+                startButton.id = "messageButton"; 
+                startButton.textContent = "START MISSION";
+                startButton.style.visibility = 'hidden'; 
+                startButton.onclick = () => {
+                    messageBox.style.display = 'none';
+                    messageBox.classList.remove('intro-message-box');
+                    buttonContainer.style.position = 'static';
+                    buttonContainer.style.bottom = 'auto';
+                    buttonContainer.style.left = 'auto';
+                    buttonContainer.style.transform = 'none';
+                    buttonContainer.style.zIndex = 'auto';
+
+                    isGamePaused = false; 
+                    if (callback) callback(); else if (!gameOver) requestAnimationFrame(gameLoop);
+                };
+                
+                introDiv.addEventListener('animationend', () => {
+                    introDiv.style.display = 'none'; 
+                    buttonContainer.appendChild(startButton); 
+                    startButton.style.visibility = 'visible'; 
+                    buttonContainer.classList.add('intro-button-active'); 
+                    messageBox.classList.remove('intro-message-box'); 
+                    messageBox.style.backgroundColor = 'rgba(17, 24, 39, 0.97)'; 
+                }, { once: true }); 
+
+            } else {
+                messageBox.classList.remove('intro-message-box');
+                messageBox.style.backgroundColor = 'rgba(17, 24, 39, 0.97)'; 
+
+                const p = document.createElement('p');
+                p.innerHTML = text.replace(/\n/g, '<br>');
+                messageContent.appendChild(p);
+
+                const mainButton = document.createElement('button');
+                mainButton.id = 'messageButton';
+                mainButton.textContent = buttonText;
+                mainButton.onclick = () => {
+                    messageBox.style.display = 'none';
+                    isGamePaused = false; 
+                    if (callback) callback(); else if (!gameOver) requestAnimationFrame(gameLoop);
+                };
+                buttonContainer.appendChild(mainButton);
+
+                if (isGameOver) {
+                    const shareButton = document.createElement('button');
+                    shareButton.textContent = "Share Score";
+                    shareButton.classList.add('share-button');
+                    shareButton.onclick = shareGameResult;
+                    buttonContainer.appendChild(shareButton);
+                }
+            }
+            messageBox.style.display = 'flex';
+        }
+        
+        function shareGameResult() {
+            const shareText = `I reached Level ${player.level} and defeated ${player.bossesDefeated} K'Tharr Overlords in Space Evolved! Can you beat my score? #SpaceEvolvedGame`;
+            shareFeedbackEl.textContent = `Share this: ${shareText}`; 
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText)
+                    .then(() => { shareFeedbackEl.textContent = "Score copied! Share it with your squadron!"; })
+                    .catch(err => { console.error('Clipboard write failed: ', err); shareFeedbackEl.textContent = `Manual share: ${shareText}`; });
+            } else { shareFeedbackEl.textContent = `Manual share: ${shareText}`; }
+        }
+
+        const UpgradeType = { FIRE_RATE: 'FIRE_RATE', MULTI_SHOT: 'MULTI_SHOT', SPREAD_SHOT: 'SPREAD_SHOT', DAMAGE_UP: 'DAMAGE_UP',};
+        const upgradeColors = { [UpgradeType.FIRE_RATE]: '#ffff00', [UpgradeType.MULTI_SHOT]: '#00ffff', [UpgradeType.SPREAD_SHOT]: '#ff00ff', [UpgradeType.DAMAGE_UP]: '#ffa500', };
+        const upgradeSymbols = { [UpgradeType.FIRE_RATE]: 'FR', [UpgradeType.MULTI_SHOT]: 'MS', [UpgradeType.SPREAD_SHOT]: 'SP', [UpgradeType.DAMAGE_UP]: 'DMG',};
+
+        const player = {
+            x: gameWidth / 2, y: gameHeight - 40, radius: 12, level: 1, speed: 2.8, 
+            color: '#0ea5e9', dx: 0, dy: 0, shootCooldownBase: 430, 
+            shootCooldownCurrent: 430, lastShotTime: 0, maxProjectilesOnScreen: 100, 
+            upgrades: { fireRateLevel: 0, numBullets: 1, spreadAngleDeg: 0, projectileDamage: 1, autoShoot: true, },
+            currentBossTriggerLevel: 10, bossesDefeated: 0, 
+        };
+
+        let projectiles = [];
+        const projectileRadius = 3.5; const projectileBaseSpeed = 6.8; 
+        const projectilePlayerColor = '#facc15'; const projectileBossColor = '#ff69b4'; 
+
+        let enemies = [];
+        const enemyBaseRadius = 8; const enemyBaseSpeed = 0.38; 
+        const MAX_ENEMY_SPEED_ADDITION = 0.20; 
+        const ENEMY_VISUAL_RADIUS_LEVEL_SCALE = 0.12; 
+        const MAX_ENEMY_VISUAL_RADIUS = 18; 
+        let enemySpawnInterval = 2150; lastEnemySpawn = 0;
+
+        let collectibles = [];
+        const collectibleRadius = 7; const collectibleLevelColor = '#10b981';
+
+        let activeBoss = null;
+        const bossHealthBarContainer = document.getElementById('bossHealthBarContainer');
+        const bossHealthBar = document.getElementById('bossHealthBar');
+        const MINION_SUMMON_BOSS_INSTANCE_THRESHOLD = 2; 
+        const BOSS_SUMMON_COOLDOWN = 6500; 
+
+        const bossBase = {
+            width: 80, height: 60, baseHealth: 70, /* Increased base boss health */ baseSpeed: 0.22, 
+            color: '#b91c1c', projectileSpeed: 4.3, shootCooldown: 1300, lastShotTime: 0,
+            attackPatterns: ['lineShot', 'spreadShot', 'charge', 'pulseShot', 'summonMinions'], 
+            currentPattern: 'lineShot', patternChangeInterval: 5800, lastPatternChange: 0,
+            chargeTargetX: null, chargeTargetY: null, isCharging: false, pulseShotAngle: 0, lastSummonTime: 0,
+        };
+
+        const joystickContainer = document.getElementById('joystickContainer');
+        const joystickKnob = document.getElementById('joystickKnob');
+        const joystick = {
+            active: false, radius: 0, knobRadius: 0,
+            baseX: 0, baseY: 0,
+            currentX: 0, currentY: 0,
+        };
+        
+        function drawCircle(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();ctx.closePath();}
+        function drawRect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h);}
+        function drawTriangle(x,y,s,c,a=0){ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.beginPath();ctx.moveTo(0,-s*1.1);ctx.lineTo(-s*0.7,s*0.5);ctx.lineTo(s*0.7,s*0.5);ctx.closePath();ctx.fillStyle=c;ctx.fill();ctx.strokeStyle='#7dd3fc';ctx.lineWidth=1.5;ctx.stroke();ctx.restore();}
+        function drawText(t,x,y,c,s="10px",al="center"){ctx.fillStyle=c;ctx.font=`${s} 'Press Start 2P'`;ctx.textAlign=al;ctx.fillText(t,x,y);}
+        function distance(x1,y1,x2,y2){const dx=x2-x1;const dy=y2-y1;return Math.sqrt(dx*dx+dy*dy);}
+        function degreesToRadians(d){return d*(Math.PI/180);}
+
+        function getTouchPos(container,touchEvent){var rect=container.getBoundingClientRect();return{x:touchEvent.touches[0].clientX-rect.left,y:touchEvent.touches[0].clientY-rect.top};}
+        function getMousePos(container,mouseEvent){var rect=container.getBoundingClientRect();return{x:mouseEvent.clientX-rect.left,y:mouseEvent.clientY-rect.top};}
+
+        joystickContainer.addEventListener('mousedown',(e)=>{joystick.active=true;updateJoystick(getMousePos(joystickContainer,e));});
+        document.addEventListener('mousemove',(e)=>{if(joystick.active)updateJoystick(getMousePos(joystickContainer,e));});
+        document.addEventListener('mouseup',()=>{if(joystick.active){joystick.active=false;resetJoystick();}});
+        joystickContainer.addEventListener('touchstart',(e)=>{e.preventDefault();joystick.active=true;updateJoystick(getTouchPos(joystickContainer,e));},{passive:false});
+        document.addEventListener('touchmove',(e)=>{if(joystick.active){e.preventDefault();updateJoystick(getTouchPos(joystickContainer,e));}},{passive:false});
+        document.addEventListener('touchend',()=>{if(joystick.active){joystick.active=false;resetJoystick();}});
+
+        function updateJoystick(pos){
+            const dx=pos.x-joystick.baseX;const dy=pos.y-joystick.baseY;
+            let dist=Math.sqrt(dx*dx+dy*dy);
+            const maxDist=joystick.radius-joystick.knobRadius;
+            if (maxDist <= 0) { player.dx = 0; player.dy = 0; return; }
+            if(dist>maxDist){ const angle=Math.atan2(dy,dx); joystick.currentX=joystick.baseX+Math.cos(angle)*maxDist; joystick.currentY=joystick.baseY+Math.sin(angle)*maxDist; player.dx=Math.cos(angle)*player.speed; player.dy=Math.sin(angle)*player.speed;
+            }else{ joystick.currentX=pos.x; joystick.currentY=pos.y; player.dx=(dx/maxDist)*player.speed; player.dy=(dy/maxDist)*player.speed; }
+            if(dist < joystick.knobRadius / 3 || dist === 0) { player.dx=0;player.dy=0; }
+            joystickKnob.style.left=`${joystick.currentX-joystick.knobRadius}px`;
+            joystickKnob.style.top=`${joystick.currentY-joystick.knobRadius}px`;
+        }
+        function resetJoystick(){
+            joystickKnob.style.left = `${joystick.baseX - joystick.knobRadius}px`;
+            joystickKnob.style.top = `${joystick.baseY - joystick.knobRadius}px`;
+            player.dx=0; player.dy=0;
+            joystick.currentX = joystick.baseX; joystick.currentY = joystick.baseY;
+            joystick.active = false; 
+        }
+        
+        const keys={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false};
+        document.addEventListener('keydown',(e)=>{if(e.code in keys)keys[e.code]=true;if(!joystick.active)updatePlayerMovementFromKeys();});
+        document.addEventListener('keyup',(e)=>{if(e.code in keys)keys[e.code]=false;if(!joystick.active)updatePlayerMovementFromKeys();});
+        function updatePlayerMovementFromKeys(){player.dx=0;player.dy=0;if(keys.ArrowLeft)player.dx=-player.speed;if(keys.ArrowRight)player.dx=player.speed;if(keys.ArrowUp)player.dy=-player.speed;if(keys.ArrowDown)player.dy=player.speed;}
+
+        function calculateShootCooldown(){player.shootCooldownCurrent=player.shootCooldownBase/(1+player.upgrades.fireRateLevel*0.33);}
+        function fireProjectile(targetX,targetY){
+            const baseAngle=Math.atan2(targetY-(player.y-player.radius),targetX-player.x);
+            const numBullets=player.upgrades.numBullets;const spreadRad=degreesToRadians(player.upgrades.spreadAngleDeg);
+            for(let i=0;i<numBullets;i++){let currentAngle=baseAngle;if(numBullets>1&&spreadRad>0){currentAngle=baseAngle-spreadRad/2+i*(spreadRad/(numBullets-1));}
+            projectiles.push({x:player.x,y:player.y-player.radius,radius:projectileRadius,color:projectilePlayerColor,dx:Math.cos(currentAngle)*projectileBaseSpeed,dy:Math.sin(currentAngle)*projectileBaseSpeed,damage:player.upgrades.projectileDamage,isPlayer:true});}
+        }
+        function autoShootController(){
+            if(!player.upgrades.autoShoot)return;const now=Date.now();
+            if(now-player.lastShotTime>player.shootCooldownCurrent&&projectiles.length<player.maxProjectilesOnScreen){
+                const target=gameMode==='boss'&&activeBoss?{x:activeBoss.x+activeBoss.width/2,y:activeBoss.y+activeBoss.height/2}:findClosestEnemy(player.x,player.y,gameHeight*0.9);
+                if(target){fireProjectile(target.x,target.y);player.lastShotTime=now;}
+            }
+        }
+        function findClosestEnemy(fromX,fromY,maxRange=Infinity){
+            let closest=null;let minSqDist=maxRange*maxRange;const targets=enemies;
+            targets.forEach(enemy=>{const enemyCenterX=enemy.x;const enemyCenterY=enemy.y;const dX=enemyCenterX-fromX;const dY=enemyCenterY-fromY;const sqDist=dX*dX+dY*dY;if(sqDist<minSqDist){minSqDist=sqDist;closest=enemy;}});
+            return closest;
+        }
+
+        function spawnEnemy(){
+            if(gameMode==='boss'||activeBoss)return;const now=Date.now();
+            if(now-lastEnemySpawn>enemySpawnInterval){
+                const displayedLevel = Math.floor(Math.random()*(player.level+5))+Math.max(1,player.level-3);
+                // MODIFIED: Capped health for regular enemies
+                const health = Math.min(displayedLevel, 40 + Math.floor(player.level / 3) + player.bossesDefeated * 5);
+
+                let visualRadius = enemyBaseRadius + displayedLevel * ENEMY_VISUAL_RADIUS_LEVEL_SCALE; 
+                visualRadius = Math.min(visualRadius, MAX_ENEMY_VISUAL_RADIUS);
+                const x=Math.random()*(gameWidth-visualRadius*2)+visualRadius;const y=-visualRadius;
+                const speedAddition = Math.min(displayedLevel * 0.01, MAX_ENEMY_SPEED_ADDITION); 
+                const speed = enemyBaseSpeed + speedAddition;
+                const hue=(displayedLevel*20)%360;const color=`hsl(${hue},75%,55%)`;
+                // Store both displayedLevel (for text) and actual health
+                enemies.push({x,y,radius:visualRadius,level:displayedLevel, health: health, speed,color,type:'normal'});
+                lastEnemySpawn=now;
+                if(enemySpawnInterval>400)enemySpawnInterval-=8; 
+            }
+        }
+
+        function summonMinionsForBoss(boss) {
+            const numMinions = 1 + Math.floor(player.bossesDefeated / 2); 
+            const bossInstanceNumber = player.bossesDefeated + 1;
+            for (let i = 0; i < numMinions; i++) {
+                const minionLevel = Math.max(1, Math.floor(boss.maxHealth / (35 - bossInstanceNumber * 2.5))); 
+                let minionVisualRadius = enemyBaseRadius + minionLevel * 0.08; 
+                minionVisualRadius = Math.min(minionVisualRadius, MAX_ENEMY_VISUAL_RADIUS - 8); 
+                const spawnEdge = Math.random() < 0.5; let x, y;
+                if (spawnEdge) { x = (Math.random() < 0.5 ? boss.x - minionVisualRadius - 8 : boss.x + boss.width + minionVisualRadius + 8); y = boss.y + boss.height / 2 + (Math.random() * boss.height - boss.height / 2);
+                } else { x = boss.x + boss.width / 2 + (Math.random() * boss.width - boss.width / 2); y = (Math.random() < 0.5 ? boss.y - minionVisualRadius - 8 : boss.y + boss.height + minionVisualRadius + 8); }
+                x = Math.max(minionVisualRadius, Math.min(gameWidth - minionVisualRadius, x)); 
+                y = Math.max(minionVisualRadius, Math.min(gameHeight - minionVisualRadius, y));
+                const speed = enemyBaseSpeed * 1.35; 
+                const health = minionLevel; const color = 'hsl(300, 70%, 60%)'; 
+                enemies.push({ x, y, radius: minionVisualRadius, level: minionLevel, speed, health, color, type: 'minion' });
+            }
+        }
+
+        function checkBossTrigger(){if(player.level>=player.currentBossTriggerLevel&&!activeBoss){spawnBoss();}}
+        function spawnBoss(){
+            gameMode='boss';enemies=[];projectiles=projectiles.filter(p=>p.isPlayer);
+            const bossInstanceNumber=player.bossesDefeated+1;
+            // MODIFIED: Boss health scaling
+            const bossHealth = bossBase.baseHealth + 
+                               (bossInstanceNumber * 50) + 
+                               ((bossInstanceNumber -1) * (bossInstanceNumber * 50)) + 
+                               (player.bossesDefeated * player.level);
+
+            activeBoss={...bossBase,x:gameWidth/2-bossBase.width/2,y:-bossBase.height-20,
+                health: bossHealth,
+                maxHealth: bossHealth, 
+                speed:bossBase.baseSpeed+(bossInstanceNumber-1)*0.09,isBoss:true,projectiles:[],lastShotTime:Date.now(),
+                lastPatternChange:Date.now(),currentPattern:bossBase.attackPatterns[Math.floor(Math.random()*bossBase.attackPatterns.length)],pulseShotAngle:0, lastSummonTime: 0};
+            activeBoss.health=Math.max(30,activeBoss.health);activeBoss.maxHealth=Math.max(30,activeBoss.maxHealth); // Ensure a minimum
+            bossHealthBarContainer.style.display='block';updateBossHealthBar();
+            showMessage(`WARNING! Level ${activeBoss.maxHealth} K'THARR OVERLORD APPROACHING!`, "ENGAGE ENEMY!", () => {
+                isGamePaused = false; if (!gameOver) requestAnimationFrame(gameLoop);
+            });
+        }
+
+        function updatePlayer(){
+            player.x+=player.dx;player.y+=player.dy;
+            player.x=Math.max(player.radius,Math.min(gameWidth-player.radius,player.x));player.y=Math.max(player.radius,Math.min(gameHeight-player.radius,player.y));
+            calculateShootCooldown();
+            let fr=player.upgrades.fireRateLevel>0?`FR:${player.upgrades.fireRateLevel}`:'';
+            let bul=player.upgrades.numBullets>1?`Bul:${player.upgrades.numBullets}`:'';
+            let spr=player.upgrades.spreadAngleDeg>0?`Spr:${player.upgrades.spreadAngleDeg}°`:'';
+            let upgTxt=[fr,bul,spr].filter(Boolean).join(' | ');
+            playerInfoDisplay.innerHTML=`Lvl: ${player.level} | Dmg: ${player.upgrades.projectileDamage}${upgTxt.length>0?'<br>'+upgTxt:''}`;
+        }
+        function updateProjectiles(){
+            for(let i=projectiles.length-1;i>=0;i--){const p=projectiles[i];p.x+=p.dx;p.y+=p.dy;if(p.x+p.radius<0||p.x-p.radius>gameWidth||p.y+p.radius<0||p.y-p.radius>gameHeight){projectiles.splice(i,1);}}
+            if(activeBoss){for(let i=activeBoss.projectiles.length-1;i>=0;i--){const bp=activeBoss.projectiles[i];bp.x+=bp.dx;bp.y+=bp.dy;if(bp.x+bp.radius<0||bp.x-bp.radius>gameWidth||bp.y+bp.radius<0||bp.y-bp.radius>gameHeight+50){activeBoss.projectiles.splice(i,1);}}}
+        }
+        function updateEnemies(){
+            for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];e.y+=e.speed;
+                if(e.y-e.radius>gameHeight + (e.type === 'minion' ? e.radius * 2 : 0) ){ enemies.splice(i,1);
+                } else if(distance(player.x,player.y,e.x,e.y)<player.radius+e.radius){
+                    triggerGameOver(`Eliminated by Level ${e.level} ${e.type === 'minion' ? 'K\'Tharr Minion' : 'Alien Scum'}!`);return;
+                }
+            }
+        }
+        function updateBoss(){
+            if(!activeBoss)return;const now=Date.now();
+            if(activeBoss.y<25){activeBoss.y+=activeBoss.speed*2.8;}
+            else{
+                if(!activeBoss.isCharging){activeBoss.x+=activeBoss.speed*(Math.sin(now/(1800-activeBoss.speed*700))>0?1:-1)*1.9;activeBoss.x=Math.max(0,Math.min(gameWidth-activeBoss.width,activeBoss.x));}
+                if(now-activeBoss.lastPatternChange>activeBoss.patternChangeInterval){
+                    let availablePatterns = [...bossBase.attackPatterns];
+                    if (player.bossesDefeated + 1 < MINION_SUMMON_BOSS_INSTANCE_THRESHOLD) { availablePatterns = availablePatterns.filter(p => p !== 'summonMinions'); }
+                    activeBoss.currentPattern=availablePatterns[Math.floor(Math.random()*availablePatterns.length)];
+                    activeBoss.lastPatternChange=now;activeBoss.isCharging=false;activeBoss.pulseShotAngle=0;console.log("Boss pattern:",activeBoss.currentPattern);
+                }
+                if(activeBoss.currentPattern === 'summonMinions') {
+                    if (player.bossesDefeated + 1 >= MINION_SUMMON_BOSS_INSTANCE_THRESHOLD && now - activeBoss.lastSummonTime > BOSS_SUMMON_COOLDOWN) { summonMinionsForBoss(activeBoss); activeBoss.lastSummonTime = now; activeBoss.lastPatternChange = now - activeBoss.patternChangeInterval + 1500; }
+                } else if(activeBoss.currentPattern!=='charge'){ if(now-activeBoss.lastShotTime>activeBoss.shootCooldown){bossShoot();activeBoss.lastShotTime=now;}
+                } else if(activeBoss.currentPattern==='charge'&&activeBoss.isCharging){ const chargeSpeed=player.speed*1.8;const angleToTarget=Math.atan2(activeBoss.chargeTargetY-(activeBoss.y+activeBoss.height/2),activeBoss.chargeTargetX-(activeBoss.x+activeBoss.width/2));activeBoss.x+=Math.cos(angleToTarget)*chargeSpeed;activeBoss.y+=Math.sin(angleToTarget)*chargeSpeed;if(distance(activeBoss.x+activeBoss.width/2,activeBoss.y+activeBoss.height/2,activeBoss.chargeTargetX,activeBoss.chargeTargetY)<25||activeBoss.y>gameHeight+activeBoss.height||activeBoss.y<-activeBoss.height){activeBoss.isCharging=false;activeBoss.lastPatternChange=now-activeBoss.patternChangeInterval+800;}}
+            }
+            if(player.x+player.radius>activeBoss.x&&player.x-player.radius<activeBoss.x+activeBoss.width&&player.y+player.radius>activeBoss.y&&player.y-player.radius<activeBoss.y+activeBoss.height){triggerGameOver("Annihilated by the K'Tharr Overlord!");return;}
+        }
+        function bossShoot(){ 
+            if(!activeBoss||activeBoss.y<0 || activeBoss.currentPattern === 'summonMinions')return;
+            const bossCenterX=activeBoss.x+activeBoss.width/2;const bossCenterY=activeBoss.y+activeBoss.height/2;const now=Date.now();
+            if(activeBoss.currentPattern==='lineShot'){const angleToPlayer=Math.atan2(player.y-bossCenterY,player.x-bossCenterX);activeBoss.projectiles.push({x:bossCenterX,y:bossCenterY,radius:7,color:projectileBossColor,dx:Math.cos(angleToPlayer)*activeBoss.projectileSpeed,dy:Math.sin(angleToPlayer)*activeBoss.projectileSpeed,isPlayer:false});}
+            else if(activeBoss.currentPattern==='spreadShot'){for(let i=-1;i<=1;i++){const angleToPlayer=Math.atan2(player.y-bossCenterY,player.x-bossCenterX);const spreadAngle=angleToPlayer+degreesToRadians(i*28);activeBoss.projectiles.push({x:bossCenterX,y:bossCenterY,radius:6,color:projectileBossColor,dx:Math.cos(spreadAngle)*activeBoss.projectileSpeed*0.9,dy:Math.sin(spreadAngle)*activeBoss.projectileSpeed*0.9,isPlayer:false});}}
+            else if(activeBoss.currentPattern==='charge'&&!activeBoss.isCharging){activeBoss.isCharging=true;activeBoss.chargeTargetX=player.x;activeBoss.chargeTargetY=player.y+player.radius;console.log("Boss charging:",activeBoss.chargeTargetX,activeBoss.chargeTargetY);}
+            else if(activeBoss.currentPattern==='pulseShot'){const bulletsInPulse=12; for(let i=0;i<bulletsInPulse;i++){const angle=activeBoss.pulseShotAngle+degreesToRadians(i*(360/bulletsInPulse));activeBoss.projectiles.push({x:bossCenterX,y:bossCenterY,radius:5,color:'#FF8C00',dx:Math.cos(angle)*activeBoss.projectileSpeed*0.8,dy:Math.sin(angle)*activeBoss.projectileSpeed*0.8,isPlayer:false});}activeBoss.pulseShotAngle+=degreesToRadians(20);activeBoss.lastShotTime=now;}
+        }
+        function updateBossHealthBar(){if(activeBoss){const healthPercentage=Math.max(0,activeBoss.health/activeBoss.maxHealth);bossHealthBar.style.width=`${healthPercentage*100}%`;}else{bossHealthBarContainer.style.display='none';}}
+        function updateCollectibles(){for(let i=collectibles.length-1;i>=0;i--){const c=collectibles[i];c.y+=0.9;if(c.y-c.radius>gameHeight)collectibles.splice(i,1);}}
+
+        function handleCollisions(){
+            for(let i=projectiles.length-1;i>=0;i--){const p=projectiles[i];if(!p.isPlayer)continue;
+                if(gameMode==='normal' || enemies.length > 0){ 
+                    for(let j=enemies.length-1;j>=0;j--){const e=enemies[j];if(distance(p.x,p.y,e.x,e.y)<p.radius+e.radius){projectiles.splice(i,1);e.health-=p.damage;if(e.health<=0){if(e.type !== 'minion'){collectibles.push({x:e.x,y:e.y,radius:collectibleRadius,type:'level',level:e.level,color:collectibleLevelColor});} if(Math.random()<(e.type === 'minion' ? 0.12 : 0.23) ){const k=Object.keys(UpgradeType);const rU=UpgradeType[k[Math.floor(Math.random()*k.length)]];collectibles.push({x:e.x+(Math.random()*10-5),y:e.y+(Math.random()*10-5),radius:collectibleRadius,type:'upgrade',upgradeType:rU,color:upgradeColors[rU]});}enemies.splice(j,1);}break;}}}
+                else if(gameMode==='boss'&&activeBoss){if(p.x+p.radius>activeBoss.x&&p.x-p.radius<activeBoss.x+activeBoss.width&&p.y+p.radius>activeBoss.y&&p.y-p.radius<activeBoss.y+activeBoss.height){projectiles.splice(i,1);activeBoss.health-=p.damage;updateBossHealthBar();if(activeBoss.health<=0){const lG=Math.floor(activeBoss.maxHealth/3.5)+5; 
+                showMessage(`K'THARR OVERLORD DESTROYED!\nGained ${lG} Levels!\nEarth is safe... for now.`, "VICTORY!",()=>{
+                    player.level+=lG;player.bossesDefeated++;
+                    collectibles.push({x:activeBoss.x+activeBoss.width/2-25,y:activeBoss.y+activeBoss.height/2,radius:collectibleRadius+2,type:'upgrade',upgradeType:UpgradeType.DAMAGE_UP,color:upgradeColors[UpgradeType.DAMAGE_UP]});
+                    collectibles.push({x:activeBoss.x+activeBoss.width/2+25,y:activeBoss.y+activeBoss.height/2,radius:collectibleRadius+2,type:'upgrade',upgradeType:UpgradeType.MULTI_SHOT,color:upgradeColors[UpgradeType.MULTI_SHOT]});
+                    const rUC=Math.min(7,player.bossesDefeated+3);for(let k=0;k<rUC;k++){const uk=Object.keys(UpgradeType);const ru=UpgradeType[uk[Math.floor(Math.random()*uk.length)]];collectibles.push({x:activeBoss.x+activeBoss.width/2+(Math.random()-0.5)*activeBoss.width*0.6,y:activeBoss.y+activeBoss.height/2+(Math.random()-0.5)*activeBoss.height*0.6+10,radius:collectibleRadius+1,type:'upgrade',upgradeType:ru,color:upgradeColors[ru]});}
+                    activeBoss=null;gameMode='normal';bossHealthBarContainer.style.display='none';player.currentBossTriggerLevel=player.level+20;enemySpawnInterval=Math.max(300,enemySpawnInterval-130*player.bossesDefeated);
+                    isGamePaused = false; if (!gameOver) requestAnimationFrame(gameLoop);
+                });}break;}}} 
+
+            for(let i=collectibles.length-1;i>=0;i--){const c=collectibles[i];if(distance(player.x,player.y,c.x,c.y)<player.radius+c.radius+(c.type==='upgrade'?3:1)){if(c.type==='level'){player.level+=c.level;}else if(c.type==='upgrade'){applyUpgrade(c.upgradeType);}collectibles.splice(i,1);player.color=`hsl(${(player.level*7+player.upgrades.fireRateLevel*7)%360},85%,70%)`;}}
+            if(activeBoss&&activeBoss.projectiles){for(let i=activeBoss.projectiles.length-1;i>=0;i--){const bp=activeBoss.projectiles[i];if(distance(player.x,player.y,bp.x,bp.y)<player.radius+bp.radius){activeBoss.projectiles.splice(i,1);triggerGameOver("Hit by Overlord's wrath!");return;}}}
+        }
+        function applyUpgrade(upgradeType){
+            switch(upgradeType){case UpgradeType.FIRE_RATE:player.upgrades.fireRateLevel=Math.min(20,player.upgrades.fireRateLevel+1);break;case UpgradeType.MULTI_SHOT:player.upgrades.numBullets=Math.min(13,player.upgrades.numBullets+1);if(player.upgrades.numBullets>1&&player.upgrades.spreadAngleDeg===0)player.upgrades.spreadAngleDeg=10;break;case UpgradeType.SPREAD_SHOT:if(player.upgrades.numBullets>1){player.upgrades.spreadAngleDeg=Math.min(110,player.upgrades.spreadAngleDeg+10);}else{player.upgrades.numBullets=2;player.upgrades.spreadAngleDeg=Math.min(110,15);}break;case UpgradeType.DAMAGE_UP:player.upgrades.projectileDamage+=1;break;}
+            calculateShootCooldown();
+        }
+
+        function triggerGameOver(reason){gameOver=true;cancelAnimationFrame(animationFrameId);showMessage(`DEFEAT! ${reason}\nFinal Level: ${player.level}\nK'Tharr Overlords Slain: ${player.bossesDefeated}`,"Try Again, Commander?",resetGame, false, true);}
+        
+        function resetGameValues(){
+            player.x=gameWidth/2;player.y=gameHeight-40;player.level=1;player.color='#0ea5e9';player.dx=0;player.dy=0;player.lastShotTime=0;
+            player.upgrades={fireRateLevel:0,numBullets:1,spreadAngleDeg:0,projectileDamage:1,autoShoot:true};
+            player.currentBossTriggerLevel=10;player.bossesDefeated=0;calculateShootCooldown();
+            
+            if (joystickContainer && joystickKnob) {
+                joystick.radius = joystickContainer.offsetWidth / 2;
+                joystick.knobRadius = joystickKnob.offsetWidth / 2;
+                joystick.baseX = joystickContainer.offsetWidth / 2;
+                joystick.baseY = joystickContainer.offsetHeight / 2;
+                joystick.currentX = joystick.baseX;
+                joystick.currentY = joystick.baseY;
+            } else { 
+                joystick.radius = 55; joystick.knobRadius = 22.5; 
+                joystick.baseX = 55; joystick.baseY = 55;
+                joystick.currentX = 55; joystick.currentY = 55;
+            }
+            resetJoystick(); 
+
+            projectiles=[];enemies=[];collectibles=[];activeBoss=null;
+            enemySpawnInterval=2150;lastEnemySpawn=0;gameMode='normal';
+            gameOver=false; isGamePaused = false; 
+            updatePlayerInfoDisplay();bossHealthBarContainer.style.display='none';
+        }
+        function resetGame(){
+            resetGameValues(); 
+            showMessage("The K'Tharr never rest... Prepare for another assault!", "START MISSION", () => {
+                isGamePaused = false; 
+                gameLoop();
+            }, true); 
+        }
+        function updatePlayerInfoDisplay(){
+            let fr=player.upgrades.fireRateLevel>0?`FR:${player.upgrades.fireRateLevel}`:'';
+            let bul=player.upgrades.numBullets>1?`Bul:${player.upgrades.numBullets}`:'';
+            let spr=player.upgrades.spreadAngleDeg>0?`Spr:${player.upgrades.spreadAngleDeg}°`:'';
+            let upgTxt=[fr,bul,spr].filter(Boolean).join(' | ');
+            playerInfoDisplay.innerHTML=`Lvl: ${player.level} | Dmg: ${player.upgrades.projectileDamage}${upgTxt.length>0?'<br>'+upgTxt:''}`;
+        }
+
+        function drawPlayer(){drawTriangle(player.x,player.y,player.radius,player.color);drawText(player.level.toString(),player.x,player.y+player.radius*0.25,"#FFF","8px");}
+        function drawProjectiles(){projectiles.forEach(p=>drawCircle(p.x,p.y,p.radius,p.color));if(activeBoss)activeBoss.projectiles.forEach(bp=>drawCircle(bp.x,bp.y,bp.radius,bp.color));}
+        function drawEnemies(){enemies.forEach(e=>{drawCircle(e.x,e.y,e.radius,e.color);drawText(e.level.toString(),e.x,e.y+e.radius/3,"#FFF",`${Math.max(6,e.radius*0.5)}px`);});}
+        function drawBoss(){if(activeBoss){drawRect(activeBoss.x,activeBoss.y,activeBoss.width,activeBoss.height,activeBoss.color);drawText(`OVERLORD`,activeBoss.x+activeBoss.width/2,activeBoss.y+activeBoss.height/2-5,"#FFF","10px");drawText(`HP ${activeBoss.maxHealth}`,activeBoss.x+activeBoss.width/2,activeBoss.y+activeBoss.height/2+10,"#FFF","8px");}}
+        function drawCollectibles(){
+            collectibles.forEach(c=>{ctx.fillStyle=c.color;
+                if(c.type==='level'){ctx.fillRect(c.x-c.radius/1.5,c.y-c.radius/4,c.radius*1.33,c.radius/2);ctx.fillRect(c.x-c.radius/4,c.y-c.radius/1.5,c.radius/2,c.radius*1.33);drawText(`+${c.level}`,c.x,c.y+c.radius/2.5,"#FFF","8px");}
+                else if(c.type==='upgrade'){ctx.save();ctx.translate(c.x,c.y);ctx.rotate(degreesToRadians(45));ctx.fillRect(-c.radius*0.8,-c.radius*0.8,c.radius*1.6,c.radius*1.6);ctx.restore();drawText(upgradeSymbols[c.upgradeType]||'UP',c.x,c.y+c.radius/3,c.upgradeType===UpgradeType.FIRE_RATE?"#333":"#000","7px");}
+            });
+        }
+
+        function gameLoop(timestamp){
+            if (isGamePaused || gameOver) { 
+                if (isGamePaused && !gameOver) { 
+                     animationFrameId = requestAnimationFrame(gameLoop);
+                }
+                return; 
+            }
+            animationFrameId = requestAnimationFrame(gameLoop); 
+
+            ctx.clearRect(0,0,gameWidth,gameHeight);
+            if(!joystick.active)updatePlayerMovementFromKeys();
+            updatePlayer();autoShootController();updateProjectiles();
+            if(gameMode==='normal'){updateEnemies();spawnEnemy();checkBossTrigger();}else if(gameMode==='boss'){updateBoss();updateEnemies();}
+            updateCollectibles();handleCollisions();
+            drawPlayer();drawProjectiles();
+            if(gameMode==='normal' || (gameMode === 'boss' && enemies.length > 0) ) drawEnemies(); 
+            if(gameMode==='boss') drawBoss();
+            drawCollectibles();
+        }
+
+        window.addEventListener('resize',()=>{
+            gameWidth = Math.min(window.innerWidth * 0.95, 400);
+            gameHeight = Math.min(window.innerHeight * 0.60, 450);
+            if (window.innerWidth > 600) { gameHeight = Math.min(window.innerHeight * 0.65, 500); }
+            if (window.innerHeight < 500) { gameHeight = Math.min(window.innerHeight * 0.55, 350); }
+            canvas.width = gameWidth;canvas.height = gameHeight;
+            gameContainer.style.width = `${gameWidth}px`;gameContainer.style.height = `${gameHeight}px`;
+            
+            if (joystickContainer && joystickKnob) {
+                joystick.radius = joystickContainer.offsetWidth / 2;
+                joystick.knobRadius = joystickKnob.offsetWidth / 2;
+                joystick.baseX = joystickContainer.offsetWidth / 2;
+                joystick.baseY = joystickContainer.offsetHeight / 2;
+                joystick.currentX = joystick.baseX; 
+                joystick.currentY = joystick.baseY;
+            }
+            resetJoystick(); 
+
+            player.x=Math.min(player.x,gameWidth-player.radius);player.y=Math.min(player.y,gameHeight-player.radius);
+            if(activeBoss){activeBoss.x=Math.min(activeBoss.x,gameWidth-activeBoss.width);activeBoss.y=Math.min(activeBoss.y,gameHeight-activeBoss.height);}
+            updateBossHealthBar();
+            if (!isGamePaused && !gameOver) { 
+                ctx.clearRect(0,0,gameWidth,gameHeight); 
+                drawPlayer(); drawProjectiles(); drawEnemies(); if(activeBoss) drawBoss(); drawCollectibles();
+            }
+        });
+        
+        // --- Start Game ---
+        showMessage("Intro Text - will be replaced by CSS animation", "START MISSION", () => {
+            resetGameValues(); 
+            gameLoop(); 
+        }, true); 
+
+    </script>
+</body>
+</html>
